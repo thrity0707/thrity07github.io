@@ -46,8 +46,8 @@ This is a deep learning-based medical CT image analysis system that integrates i
 
 ```bash
 # 克隆项目 / Clone repository
-git clone https://github.com/your-repo/medical-image-analysis.git
-cd medical-image-analysis
+git clone https://github.com/thrity0707/thrity07github.io.git
+cd thrity07github.io
 
 # 安装基础依赖 / Install basic dependencies
 pip install -r requirements.txt
@@ -75,10 +75,12 @@ python main.py
 ## 📁 项目结构 / Project Structure
 
 ```
-medical_image_analysis-main/
+thrity07github.io/
 ├── main.py                 # 主程序入口 / Main entry
 ├── run_demo.py            # 演示脚本 / Demo script
 ├── requirements.txt       # 依赖列表 / Dependencies
+├── streamlit_app.py       # Web应用 / Web application
+├── index.html             # 项目主页 / Project homepage
 ├── gui/                   # 图形界面 / GUI modules
 │   ├── __init__.py
 │   └── main_window.py     # 主窗口 / Main window
@@ -97,6 +99,14 @@ medical_image_analysis-main/
 └── logs/                  # 日志目录 / Log directory
 ```
 
+## 🌐 在线访问 / Online Access
+
+### GitHub Pages 主页
+访问项目主页：[https://thrity0707.github.io/thrity07github.io](https://thrity0707.github.io/thrity07github.io)
+
+### Streamlit 在线应用
+在线体验AI分析：[https://thrity0707-thrity07github-io-streamlit-app.streamlit.app](https://thrity0707-thrity07github-io-streamlit-app.streamlit.app)
+
 ## 🔧 使用说明 / Usage Guide
 
 ### 图形界面操作 / GUI Operation
@@ -105,6 +115,14 @@ medical_image_analysis-main/
 2. **开始分析**: 点击"开始分析"按钮进行AI分析
 3. **查看结果**: 在右侧面板查看分析结果
 4. **生成报告**: 点击"生成PDF报告"保存结果
+
+### Web应用操作 / Web Application
+
+1. 访问在线地址或点击主页的"启动在线分析系统"按钮
+2. 使用"智能演示"查看系统功能
+3. 上传您的CT影像文件
+4. 查看AI分析结果和可视化图表
+5. 下载分析报告
 
 ### 支持的文件格式 / Supported Formats
 
@@ -189,6 +207,8 @@ analyzer.load_segmentation_model("path/to/your/segmentation_model.pth")
 - ✅ PDF报告生成
 - ✅ 多格式图像支持
 - ✅ 风险评估系统
+- ✅ Streamlit Web应用
+- ✅ GitHub Pages部署
 
 ### v1.0.0.20250314_alpha (已弃用 / Deprecated)
 - 基础CT分类功能
