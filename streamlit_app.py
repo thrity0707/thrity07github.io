@@ -310,87 +310,203 @@ def main():
         st.header("系统控制")
         st.info("**版本**: v2.1.3 Web Pro\n**模型**: DenseNet121 + UNet\n**新增**: 文件上传功能")
         
-        mode = st.selectbox("分析模式", ["智能演示", "文件上传"])
+        st.subheader("📁 支持格式")
+        st.markdown("""
+        - **标准图像**: PNG, JPEG, JPG
+        - **医学格式**: DICOM (.dcm)
+        - **神经影像**: NIfTI (.nii)
+        - **最大文件**: 10MB
+        """)
         
-        if mode == "文件上传":
-            st.subheader("📁 支持格式")
-            st.markdown("""
-            - **标准图像**: PNG, JPEG, JPG
-            - **医学格式**: DICOM (.dcm)
-            - **神经影像**: NIfTI (.nii)
-            - **最大文件**: 10MB
-            """)
+        # 重置按钮
+        if st.button("🔄 重置系统", use_container_width=True):
+            # 清除所有session state
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()
     
-    # 主界面
-    if mode == "智能演示":
-        st.header("🔬 智能演示")
+    # 功能选择区域
+    st.header("🚀 选择分析模式")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        demo_button = st.button(
+            "🔬 智能演示",
+            type="primary",
+            use_container_width=True,
+            help="使用系统生成的模拟CT图像进行演示分析"
+        )
+        st.markdown("""
+        **智能演示模式特点：**
+        - 🎯 快速体验系统功能
+        - 🖼️ 自动生成模拟CT图像
+        - 📊 完整的AI分析流程
+        - 📄 专业分析报告
+        """)
+    
+    with col2:
+        upload_button = st.button(
+            "📁 文件上传",
+            type="secondary",
+            use_container_width=True,
+            help="上传您的CT影像文件进行真实分析"
+        )
+        st.markdown("""
+        **文件上传模式特点：**
+        - 📋 支持多种医学影像格式
+        - 🔍 真实文件分析处理
+        - 📈 高级图像特征提取
+        - 💾 结果下载保存
+        """)
+    
+    # 根据按钮点击设置模式
+    if demo_button:
+        st.session_state['mode'] = 'demo'
+    elif upload_button:
+        st.session_state['mode'] = 'upload'
+    
+    # 显示当前选择的模式
+    current_mode = st.session_state.get('mode', None)
+    
+    if current_mode == 'demo':
+        st.divider()
+        demo_mode_interface()
+    elif current_mode == 'upload':
+        st.divider()
+        upload_mode_interface()
+    else:
+        # 首次访问显示欢迎信息
+        st.divider()
+        st.info("👆 请选择上方的分析模式开始使用系统")
         
-        col1, col2, col3 = st.columns([1, 2, 1])
+        # 显示系统特性
+        st.subheader("✨ 系统特性")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            st.markdown("""
+            **🔬 AI智能分析**
+            - DenseNet121 + UNet模型
+            - 多维度特征提取
+            - 智能风险评估
+            """)
+        
         with col2:
-            if st.button("🚀 开始演示分析", type="primary", use_container_width=True):
-                # 生成演示图像
-                with st.spinner("生成模拟CT图像..."):
-                    demo_img = create_demo_image()
-                    st.session_state['image'] = demo_img
-                    st.session_state['filename'] = f"demo_ct_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+            st.markdown("""
+            **📊 可视化分析**
+            - 6种分析图表
+            - 热力图关注区域
+            - 风险因子雷达图
+            """)
+        
+        with col3:
+            st.markdown("""
+            **📄 专业报告**
+            - 详细医学建议
+            - 技术分析参数
+            - 多格式导出
+            """)
+
+def demo_mode_interface():
+    """智能演示模式界面"""
+    st.header("🔬 智能演示模式")
+    st.info("💡 本模式使用系统生成的模拟CT图像进行演示，展示完整的AI分析流程")
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("🚀 开始演示分析", type="primary", use_container_width=True):
+            # 生成演示图像
+            with st.spinner("生成模拟CT图像..."):
+                demo_img = create_demo_image()
+                st.session_state['image'] = demo_img
+                st.session_state['filename'] = f"demo_ct_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+            
+            # 执行分析
+            with st.spinner("AI深度分析中..."):
+                result = advanced_image_analysis(demo_img)
+                st.session_state['result'] = result
+            
+            st.success("✅ 分析完成！")
+    
+    # 显示结果
+    if 'result' in st.session_state and 'image' in st.session_state:
+        display_analysis_results()
+
+def upload_mode_interface():
+    """文件上传模式界面"""
+    st.header("📁 文件上传分析模式")
+    st.info("💡 上传您的CT影像文件，系统将进行专业的AI分析")
+    
+    uploaded_file = st.file_uploader(
+        "选择CT影像文件",
+        type=['png', 'jpg', 'jpeg', 'dcm', 'dicom', 'nii'],
+        help="支持PNG、JPEG、DICOM、NIfTI等格式，最大文件大小10MB"
+    )
+    
+    if uploaded_file is not None:
+        # 显示文件信息
+        file_details = {
+            "文件名": uploaded_file.name,
+            "文件大小": f"{uploaded_file.size / 1024:.1f} KB",
+            "文件类型": uploaded_file.type if uploaded_file.type else "未知"
+        }
+        
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            st.subheader("📋 文件信息")
+            for key, value in file_details.items():
+                st.write(f"**{key}**: {value}")
+            
+            # 文件预览（如果是图像格式）
+            if uploaded_file.type and uploaded_file.type.startswith('image/'):
+                try:
+                    preview_img = Image.open(uploaded_file)
+                    uploaded_file.seek(0)  # 重置文件指针
+                    st.image(preview_img, caption="文件预览", width=200)
+                except:
+                    st.write("无法预览此文件")
+        
+        with col2:
+            st.subheader("🔬 开始分析")
+            st.write("文件已准备就绪，点击下方按钮开始AI分析")
+            
+            if st.button("🚀 开始分析", type="primary", use_container_width=True):
+                # 加载图像
+                with st.spinner("加载图像中..."):
+                    img, success, message = load_image_from_upload(uploaded_file)
                 
-                # 执行分析
-                with st.spinner("AI深度分析中..."):
-                    result = advanced_image_analysis(demo_img)
-                    st.session_state['result'] = result
-                
-                st.success("✅ 分析完成！")
+                if success:
+                    st.success(message)
+                    st.session_state['image'] = img
+                    st.session_state['filename'] = uploaded_file.name
+                    
+                    # 执行分析
+                    with st.spinner("AI深度分析中...请稍候..."):
+                        result = advanced_image_analysis(img)
+                        st.session_state['result'] = result
+                    
+                    st.success("✅ 分析完成！请查看下方结果")
+                else:
+                    st.error(message)
+                    st.write("**建议操作：**")
+                    st.write("- 检查文件格式是否正确")
+                    st.write("- 确保文件未损坏")
+                    st.write("- 尝试转换为PNG或JPEG格式")
         
         # 显示结果
         if 'result' in st.session_state and 'image' in st.session_state:
             display_analysis_results()
-    
-    else:  # 文件上传模式
-        st.header("📁 文件上传分析")
-        
-        uploaded_file = st.file_uploader(
-            "选择CT影像文件",
-            type=['png', 'jpg', 'jpeg', 'dcm', 'dicom', 'nii'],
-            help="支持PNG、JPEG、DICOM、NIfTI等格式"
-        )
-        
-        if uploaded_file is not None:
-            # 显示文件信息
-            file_details = {
-                "文件名": uploaded_file.name,
-                "文件大小": f"{uploaded_file.size / 1024:.1f} KB",
-                "文件类型": uploaded_file.type
-            }
-            
-            col1, col2 = st.columns([1, 2])
-            with col1:
-                st.subheader("📋 文件信息")
-                for key, value in file_details.items():
-                    st.write(f"**{key}**: {value}")
-            
-            with col2:
-                if st.button("🔬 开始分析", type="primary", use_container_width=True):
-                    # 加载图像
-                    with st.spinner("加载图像中..."):
-                        img, success, message = load_image_from_upload(uploaded_file)
-                    
-                    if success:
-                        st.success(message)
-                        st.session_state['image'] = img
-                        st.session_state['filename'] = uploaded_file.name
-                        
-                        # 执行分析
-                        with st.spinner("AI深度分析中..."):
-                            result = advanced_image_analysis(img)
-                            st.session_state['result'] = result
-                        
-                        st.success("✅ 分析完成！")
-                    else:
-                        st.error(message)
-            
-            # 显示结果
-            if 'result' in st.session_state and 'image' in st.session_state:
-                display_analysis_results()
+    else:
+        # 显示拖拽区域提示
+        st.markdown("""
+        <div style="border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0;">
+            <h4>📁 拖拽文件到此处或点击上方按钮选择文件</h4>
+            <p>支持的格式：PNG, JPEG, DICOM (.dcm), NIfTI (.nii)</p>
+            <p>最大文件大小：10MB</p>
+        </div>
+        """, unsafe_allow_html=True)
 
 def display_analysis_results():
     """显示分析结果"""
