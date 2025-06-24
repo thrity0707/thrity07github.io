@@ -145,29 +145,34 @@ def advanced_image_analysis(img):
 
 def create_analysis_visualizations(img, result):
     """创建分析可视化图表"""
+    # 设置matplotlib支持中文的字体
+    plt.rcParams['font.sans-serif'] = ['Arial', 'DejaVu Sans', 'Liberation Sans', 'SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+    
     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
     
     # 原始图像
     axes[0, 0].imshow(img, cmap='gray')
-    axes[0, 0].set_title('原始CT图像')
+    axes[0, 0].set_title('Original CT Image', fontsize=12, fontweight='bold')
     axes[0, 0].axis('off')
     
     # 边缘检测
     axes[0, 1].imshow(result['edges'], cmap='gray')
-    axes[0, 1].set_title('边缘检测')
+    axes[0, 1].set_title('Edge Detection', fontsize=12, fontweight='bold')
     axes[0, 1].axis('off')
     
     # 直方图
     axes[0, 2].hist(img.flatten(), bins=50, alpha=0.7, color='blue')
-    axes[0, 2].set_title('强度分布直方图')
-    axes[0, 2].set_xlabel('像素强度')
-    axes[0, 2].set_ylabel('频率')
+    axes[0, 2].set_title('Intensity Histogram', fontsize=12, fontweight='bold')
+    axes[0, 2].set_xlabel('Pixel Intensity', fontsize=10)
+    axes[0, 2].set_ylabel('Frequency', fontsize=10)
+    axes[0, 2].grid(True, alpha=0.3)
     
     # 热力图 (模拟关注区域)
     heatmap = cv2.GaussianBlur(result['edges'].astype(np.float32), (15, 15), 0)
     axes[1, 0].imshow(img, cmap='gray', alpha=0.7)
     axes[1, 0].imshow(heatmap, cmap='hot', alpha=0.3)
-    axes[1, 0].set_title('AI关注区域热力图')
+    axes[1, 0].set_title('AI Attention Heatmap', fontsize=12, fontweight='bold')
     axes[1, 0].axis('off')
     
     # ROI分析 (感兴趣区域)
@@ -176,11 +181,11 @@ def create_analysis_visualizations(img, result):
     roi = img > threshold
     axes[1, 1].imshow(img, cmap='gray', alpha=0.7)
     axes[1, 1].imshow(roi, cmap='Reds', alpha=0.5)
-    axes[1, 1].set_title('感兴趣区域(ROI)')
+    axes[1, 1].set_title('Region of Interest (ROI)', fontsize=12, fontweight='bold')
     axes[1, 1].axis('off')
     
     # 风险评估雷达图
-    categories = ['强度异常', '纹理复杂度', '边缘密度', '形态变化', '对比度']
+    categories = ['Intensity\nAnomaly', 'Texture\nComplexity', 'Edge\nDensity', 'Morphology\nChange', 'Contrast\nLevel']
     values = [
         result['risk_score'],
         min(result['entropy'] / 10, 1),
@@ -193,15 +198,16 @@ def create_analysis_visualizations(img, result):
     values += values[:1]  # 闭合雷达图
     angles = np.concatenate((angles, [angles[0]]))
     
-    axes[1, 2].plot(angles, values, 'o-', linewidth=2, color='red')
+    axes[1, 2].plot(angles, values, 'o-', linewidth=2, color='red', markersize=6)
     axes[1, 2].fill(angles, values, alpha=0.25, color='red')
     axes[1, 2].set_xticks(angles[:-1])
-    axes[1, 2].set_xticklabels(categories, fontsize=8)
+    axes[1, 2].set_xticklabels(categories, fontsize=9, ha='center')
     axes[1, 2].set_ylim(0, 1)
-    axes[1, 2].set_title('风险因子雷达图')
-    axes[1, 2].grid(True)
+    axes[1, 2].set_title('Risk Factor Radar Chart', fontsize=12, fontweight='bold')
+    axes[1, 2].grid(True, alpha=0.3)
     
-    plt.tight_layout()
+    # 设置子图间距
+    plt.tight_layout(pad=2.0)
     return fig
 
 def generate_detailed_report(result, filename):
